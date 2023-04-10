@@ -31,8 +31,8 @@ const POZIOMY = [ // 0 -> podłoga 1->ściana 2 -> box 4 -> miejsce boxa 5 -> gr
       [8,8,8,8,8,8,8,8,8,8,8,8,8,8],
     ] 
   ]
-  const KOLOR = ["#ddd", "#777", "brown", null, "yellow", "#000", null, "green", "transparent"]
-  
+  const KOLOR = ["#ddd", "#777", "pink", null, "yellow", "#000", null, "green", "transparent"]
+  const KOLOR_NA_MIEJSCU = 7
   const ELEMENT = {
     Gra:         0,
     Sciana:      1,
@@ -80,17 +80,17 @@ const POZIOMY = [ // 0 -> podłoga 1->ściana 2 -> box 4 -> miejsce boxa 5 -> gr
   }
   function procesGry(state, action) {
     switch (action.type) {
-      case AKCJA.RestartLevel:
+      case AKCJA.RestartPoziomu:
         return {...wezAktualnyStan(state.levelNo), status: STAN_GRY.Dziala}
-      case AKCJA.PlayNextLevel:
+      case AKCJA.KolejnyPoziom:
         return {...wezAktualnyStan(state.levelNo+1), status: STAN_GRY.Dziala}
-      case AKCJA.Move:
+      case AKCJA.Ruch:
         let d = {x: 0, y: 0} 
         console.log(action.keyCode)
-        if (KIERUNEK.Left === action.keyCode)  d.x-- 
-        if (KIERUNEK.Right === action.keyCode) d.x++
-        if (KIERUNEK.Up === action.keyCode)    d.y--
-        if (KIERUNEK.Down === action.keyCode)  d.y++
+        if (KIERUNEK.Lewo === action.keyCode)  d.x-- 
+        if (KIERUNEK.Prawo === action.keyCode) d.x++
+        if (KIERUNEK.Gora === action.keyCode)    d.y--
+        if (KIERUNEK.Dol === action.keyCode)  d.y++
         // check walls
         if ( state.poziom[state.gracz.y+d.y][state.gracz.x+d.x] === ELEMENT.Sciana) return {...state}
         // check if the player is trying to move the box
@@ -109,8 +109,8 @@ const POZIOMY = [ // 0 -> podłoga 1->ściana 2 -> box 4 -> miejsce boxa 5 -> gr
             } ) }
             // check level completed OR game finished
             let skrzynieNaMiejscu = 0
-            nowyStan.box.forEach(b=>{ if (nowyStan.level[b.y][b.x] === ELEMENT.Magazyn) skrzynieNaMiejscu++ })
-            if (skrzynieNaMiejscu === nowyStan.box.length) return {...nowyStan, status:STAN_GRY.Koniec}
+            nowyStan.skrzynia.forEach(b=>{ if (nowyStan.poziom[b.y][b.x] === ELEMENT.Magazyn) skrzynieNaMiejscu++ })
+            if (skrzynieNaMiejscu === nowyStan.skrzynia.length) return {...nowyStan, status:STAN_GRY.Koniec}
             return nowyStan
           } else // cannot move the box, player must stay at the same position
             return {...state}
@@ -121,4 +121,41 @@ const POZIOMY = [ // 0 -> podłoga 1->ściana 2 -> box 4 -> miejsce boxa 5 -> gr
     }
     return state
   }
+  function przydzielKolor(y,x, kolor, gracz, skrzynia, jestMagazynem) {
+    if (gracz.y === y &&gracz.x === x)                   return ELEMENT.Gracz
+    if (skrzynia.find( b => (b.y===y && b.x===x)) && jestMagazynem ) return KOLOR_NA_MIEJSCU  // index zielonego koloru
+    if (skrzynia.find( b => (b.y===y && b.x===x)))               return ELEMENT.Skrzynia  
+    return kolor
+  }
+  
+export default function Sokoban() {
+  let [state, dispatch] = useReducer(procesGry, wezAktualnyStan(0) )
+  console.log(state)
+
+  function handleMove(e) {
+    if ( [KIERUNEK.Lewo, KIERUNEK.Prawo, KIERUNEK.Gora, KIERUNEK.Dol].includes(e.keyCode) ) {
+      e.preventDefault(); 
+      dispatch({type: AKCJA.Ruch, keyCode: e.keyCode}) 
+    }
+  }
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleMove); 
+    return () => { document.removeEventListener('keydown', handleMove); }              // destroy
+  });  
+
+  return (
+    <div className="Sokoban">
+      <div>Gra Sokoban, kontrolki: Strzałki, cel: przenieś róznowe pudełko na zółte pole po przejściu poziomu nacisnij button kolejny poziom, w razie porażki naciśnij button zrestartuj poziom</div>
+      <button onClick={()=> dispatch({type: AKCJA.RestartPoziomu})}>Zrestartuj poziom</button>
+      {state.status === STAN_GRY.Koniec && state.levelNo<POZIOMY.length-1 && <button onClick={()=> dispatch({type: AKCJA.KolejnyPoziom})}>Kolejny Poziom</button>}
+      {state.status === STAN_GRY.Koniec && <h3>Poziom Skończony!</h3>}
+        {[...state.poziom].map( (row, y) => {
+          return <div key={`${y}`} style={{display: 'block', lineHeight: 0}}>{
+            row.map( (col, x) => {return <div key={`${y}-${x}`} style={{backgroundColor: KOLOR[przydzielKolor(y,x, col, state.gracz, state.skrzynia, state.poziom[y][x]===ELEMENT.Magazyn)], width: "20px", height:"20px", display:"inline-block", border: state.poziom[y][x]===ELEMENT.Przestrzen ? '1px solid transparent': '1px solid #ccc'}}/>})  
+          }</div> 
+        })}
+    </div>
+  );
+}
   
