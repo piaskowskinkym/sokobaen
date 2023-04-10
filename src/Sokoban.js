@@ -32,14 +32,14 @@ const POZIOMY = [ // 0 -> podłoga 1->ściana 2 -> box 4 -> miejsce boxa 5 -> gr
     ] 
   ]
   const KOLOR = ["#ddd", "#777", "brown", null, "yellow", "#000", null, "green", "transparent"]
-  const KOLOR_NA_POZYCJI = 7 
+  
   const PRZEDMIOT = {
-    Gra:       0,
-    Sciana:             1,
-    Skrzynia:              2,
-    Magazyn:          4,
-    Gracz:           5,
-    Przestrzen:            8 
+    Gra:         0,
+    Sciana:      1,
+    Skrzynia:    2,
+    Magazyn:     4,
+    Gracz:       5,
+    Przestrzen:  8 
   }
   const STAN_GRY = { 
     Dziala:          "DZIALA", 
