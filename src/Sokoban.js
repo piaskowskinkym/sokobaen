@@ -78,45 +78,45 @@ const POZIOMY = [ // 0 -> podłoga 1->ściana 2 -> box 4 -> miejsce boxa 5 -> gr
       poziom, gracz, skrzynia
     }
   }
-  function GameReducer(state, AKCJA) {
-    switch (AKCJA.type) {
+  function procesGry(state, action) {
+    switch (action.type) {
       case AKCJA.RestartLevel:
-        return {...getInitialState(state.levelNo), status: STAN_GRY.Running}
+        return {...wezAktualnyStan(state.levelNo), status: STAN_GRY.Dziala}
       case AKCJA.PlayNextLevel:
-        return {...getInitialState(state.levelNo+1), status: GAME_STATE.Running}
+        return {...wezAktualnyStan(state.levelNo+1), status: STAN_GRY.Dziala}
       case AKCJA.Move:
         let d = {x: 0, y: 0} 
-        console.log(AKCJA.keyCode)
-        if (KIERUNEK.Left === AKCJA.keyCode)  d.x-- 
-        if (KIERUNEK.Right === AKCJA.keyCode) d.x++
-        if (KIERUNEK.Up === AKCJA.keyCode)    d.y--
-        if (KIERUNEK.Down === AKCJA.keyCode)  d.y++
+        console.log(action.keyCode)
+        if (KIERUNEK.Left === action.keyCode)  d.x-- 
+        if (KIERUNEK.Right === action.keyCode) d.x++
+        if (KIERUNEK.Up === action.keyCode)    d.y--
+        if (KIERUNEK.Down === action.keyCode)  d.y++
         // check walls
-        if ( state.level[state.player.y+d.y][state.player.x+d.x] === ITEM.Wall) return {...state}
+        if ( state.poziom[state.gracz.y+d.y][state.gracz.x+d.x] === ELEMENT.Sciana) return {...state}
         // check if the player is trying to move the box
-        if ( [...state.box].find(b => b.x===state.player.x+d.x && b.y===state.player.y+d.y) ) {
+        if ( [...state.skrzynia].find(b => b.x===state.gracz.x+d.x && b.y===state.gracz.y+d.y) ) {
           // check whether it's possible to move the box
           if ( 
-            [ITEM.Playground, ITEM.Storage].includes(state.level[state.player.y+2*d.y][state.player.x+2*d.x])  // check free space space behind box
-            && ![...state.box].find(b => b.x === state.player.x+2*d.x && b.y === state.player.y+2*d.y)         // check box-free space behind box
+            [ELEMENT.Gra, ELEMENT.Magazyn].includes(state.poziom[state.gracz.y+2*d.y][state.gracz.x+2*d.x])  // check free space space behind box
+            && ![...state.skrzynia].find(b => b.x === state.gracz.x+2*d.x && b.y === state.gracz.y+2*d.y)         // check box-free space behind box
           ) { // return new position with moved box
-            let newState = {...state, player: {x: state.player.x+d.x, y: state.player.y+d.y}, box: [...state.box].map(b => {
+            let nowyStan = {...state, gracz: {x: state.gracz.x+d.x, y: state.gracz.y+d.y}, skrzynia: [...state.skrzynia].map(b => {
               // IF the player tries to move to the box's position
-              if ( (b.x === state.player.x+d.x) && (b.y === state.player.y+d.y) ) 
+              if ( (b.x === state.gracz.x+d.x) && (b.y === state.gracz.y+d.y) ) 
                 return {x: b.x+d.x, y: b.y+d.y}
               else
                 return b
             } ) }
             // check level completed OR game finished
-            let boxesInPlace = 0
-            newState.box.forEach(b=>{ if (newState.level[b.y][b.x] === ITEM.Storage) boxesInPlace++ })
-            if (boxesInPlace === newState.box.length) return {...newState, status:GAME_STATE.Done}
-            return newState
+            let skrzynieNaMiejscu = 0
+            nowyStan.box.forEach(b=>{ if (nowyStan.level[b.y][b.x] === ELEMENT.Magazyn) skrzynieNaMiejscu++ })
+            if (skrzynieNaMiejscu === nowyStan.box.length) return {...nowyStan, status:STAN_GRY.Koniec}
+            return nowyStan
           } else // cannot move the box, player must stay at the same position
             return {...state}
         }
-        // standard movement without interAKCJA with the boxes
-        return {...state, player: {x: state.player.x+d.x, y: state.player.y+d.y}}
+        // standard movement without interaction with the boxes
+        return {...state, gracz: {x: state.gracz.x+d.x, y: state.gracz.y+d.y}}
       default:  
     }
     return state
