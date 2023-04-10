@@ -1,6 +1,6 @@
 import React, {useEffect, useReducer} from "react"
 
-const LEVELS = [ // 0=playground, 1=wall, 2=box (playground bellow), 4=storage, 5=player (playground bellow), 8=outside world
+const POZIOMY = [ // 0 -> podłoga 1->ściana 2 -> box 4 -> miejsce boxa 5 -> gracz 8 -> przestrzeń
     [ // level 1  
       [8,8,8,8,8,8,8,8,8,8],
       [8,8,8,8,8,1,1,1,1,8],  
@@ -31,3 +31,28 @@ const LEVELS = [ // 0=playground, 1=wall, 2=box (playground bellow), 4=storage, 
       [8,8,8,8,8,8,8,8,8,8,8,8,8,8],
     ] 
   ]
+  const KOLOR = ["#ddd", "#777", "brown", null, "yellow", "#000", null, "green", "transparent"]
+  const KOLOR_NA_POZYCJI = 7 
+  const PRZEDMIOT = {
+    Gra:       0,
+    Sciana:             1,
+    Skrzynia:              2,
+    Magazyn:          4,
+    Gracz:           5,
+    Przestrzen:            8 
+  }
+  const STAN_GRY = { 
+    Dziala:          "DZIALA", 
+    Koniec:             "KONIEC" 
+  } 
+  const AKCJA = {
+    Ruch:             "RUCH", 
+    RestartPoziomu:     "RESTART_POZIOM",
+    KolejnyPoziom:    "KOLEJNY_POZIOM"
+  }
+  const KIERUNEK = { 
+    Lewo:             37, 
+    Prawo:            39, 
+    Gora:             38, 
+    Dol:              40 
+  }
