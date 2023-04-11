@@ -1,10 +1,9 @@
-# Getting Started with Create React App
+# Gra Sokoban Dokumentacja
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-## Available Scripts
+## Zamysły projektu
+Projekt za zadanie ma stworzenie prostej gry w stylu sokoban. W grze dostępne będą dwa poziomy. Celem gry jest przeniesienie różowych kwadratów na zółte pola.
 
-In the project directory, you can run:
 
 ### `npm start`
 
