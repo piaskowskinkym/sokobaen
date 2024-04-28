@@ -14,9 +14,3 @@ Folder node_modules zawiera moduły instalowane wraz z tworzeniem projektu w rea
 Folder sokoban zawiera foldery public oraz src 
 * Folder public jest tworzony automatycznie wraz z rozpoczęciem projektu 
 * Folder src zawiera pliki Sokoban.js oraz index.js kktóe są najważniejszymi plikami w projekcie
-
-
-###`Plik Sokoban`
-Plik Sokoban.js zawiera w sobie skrypt całego projektu poniżej opisze wszystkie funkcjie oraz obiekty się w nim znajdujące.
-*Obiekt Poziomy - Obiekt poziomy zawiera w sobie dwie tablice numeryczne które są mapami na których gracz będzie się poruszał
-*Obiekt 
